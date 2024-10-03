@@ -7,7 +7,7 @@
   },
   "type": "module",
   "dependencies": {
-    "@prisma/client": "5.20.0",
+    "@prisma/client": "^5.20.0",
     "@types/node": "^22.7.4",
     "elysia": "latest",
     "prisma": "^5.20.0",
