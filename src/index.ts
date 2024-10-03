@@ -1,9 +1,15 @@
 import { PrismaClient } from "@prisma/client";
+import { logger } from "@tqman/nice-logger";
 import { Elysia, t } from "elysia";
 import { bgTypes } from "./types/types";
 const db = new PrismaClient();
 
 new Elysia()
+  .use(
+    logger({
+      mode: "live", // "live" or "combined" (default: "combined")
+    })
+  )
   .group("/api", (app) =>
     app
       .get("/", () => {
@@ -11,12 +17,12 @@ new Elysia()
       })
       .group("/patient", (app) =>
         app
-          .get("/patients", async () => {
+          .get("/", async () => {
             let patients = await db.patient.findMany();
             return patients;
           })
 
-          .get("/patient/:id", async ({ params: { id } }) => {
+          .get("/:id", async ({ params: { id } }) => {
             return await db.patient.findFirst({
               where: {
                 id: id,
@@ -25,11 +31,12 @@ new Elysia()
           })
 
           .post(
-            "/patient",
-            ({ body }) => {
-              db.patient.create({
+            "/",
+            async ({ body }) => {
+              const patient = await db.patient.create({
                 data: body,
               });
+              return { msg: "Created patient", patient };
             },
             {
               body: t.Object({
@@ -42,14 +49,14 @@ new Elysia()
           )
 
           .put(
-            "/patient/:id",
-            ({ params, body }) => {
+            "/:id",
+            async ({ params, body }) => {
               const { id } = params;
               const { name, phone_number, blood_group } = body;
               try {
-                db.patient.update({
+                const patient = await db.patient.update({
                   where: {
-                    id: id,
+                    id,
                   },
                   data: {
                     ...(id ? { id } : {}),
@@ -58,6 +65,7 @@ new Elysia()
                     ...(blood_group ? { blood_group } : {}),
                   },
                 });
+                return { msg: "updated user", patient };
               } catch (err: unknown) {
                 console.log(`Error occured while updating ${err}`);
               }
@@ -65,10 +73,9 @@ new Elysia()
             {
               body: t.Object(
                 {
-                  id: t.String(),
-                  name: t.String(),
-                  phone_number: t.String(),
-                  blood_group: bgTypes,
+                  name: t.Optional(t.String()),
+                  phone_number: t.Optional(t.String()),
+                  blood_group: t.Optional(bgTypes),
                 },
                 {
                   minProperties: 1,
@@ -78,14 +85,15 @@ new Elysia()
           )
 
           .delete(
-            "/patient",
-            ({ body }) => {
+            "/",
+            async ({ body }) => {
               const { id } = body;
-              db.patient.delete({
+              const patient = await db.patient.delete({
                 where: {
                   id,
                 },
               });
+              return { msg: "Deleted patient", patient };
             },
             {
               body: t.Object({
@@ -97,4 +105,4 @@ new Elysia()
   )
 
   .listen(3000);
-console.log(`Elysia is running at localhost:8080`);
+console.log(`Elysia is running at localhost:3000`);
