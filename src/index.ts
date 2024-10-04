@@ -2,7 +2,6 @@ import { PrismaClient } from "@prisma/client";
 import { logger } from "@tqman/nice-logger";
 import { Elysia, t } from "elysia";
 import { bgTypes, Medication } from "./types/types";
-import { parseArgs } from "util";
 import { removeUndefinedValues } from "../utils/filterObject";
 const db = new PrismaClient();
 
@@ -126,15 +125,18 @@ new Elysia()
               }),
             }
           )
-          .get("/form/:pid/:time", async ({ params }) => {
-            const { pid, time } = params;
-            return await db.formResponse.findFirst({
-              where: {
-                patient_id: pid,
-                submitted_at: time,
-              },
-            });
-          })
+          .get(
+            "/form/patient/:pid/time/:time",
+            async ({ params }: { params: { pid: string; time: string } }) => {
+              const { pid, time } = params;
+              return await db.formResponse.findFirst({
+                where: {
+                  patient_id: pid,
+                  submitted_at: time,
+                },
+              });
+            }
+          )
           .post(
             "/form",
             async ({ body }) => {
