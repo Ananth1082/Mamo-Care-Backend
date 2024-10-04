@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -12,16 +6,48 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
 model Doctor {
-  id    Int     @id @default(autoincrement())
-  name String  
+  id   Int    @id @default(autoincrement())
+  name String
 }
 
 model Patient {
-  id String @id
-  name String
+  id           String         @id
+  name         String
   phone_number String
-  blood_group BloodGroup
+  blood_group  BloodGroup
+  forms        FormResponse[]
+  meds         Medication[]
+}
+
+model FormResponse {
+  id           Int      @id @default(autoincrement())
+  patient_id   String
+  submitted_at DateTime
+  question1    String
+  question2    String
+  question3    String
+  patient      Patient  @relation(fields: [patient_id], references: [id])
+
+  @@unique([patient_id, submitted_at])
+}
+
+model Medication {
+  id          Int      @id @default(autoincrement())
+  patient_id  String
+  tablet_name String
+  notes       String
+  Monday      String[]
+  Tuesday     String[]
+  Wednesday   String[]
+  Thursday    String[]
+  Friday      String[]
+  Saturday    String[]
+  Sunday      String[]
+  patient     Patient  @relation(fields: [patient_id], references: [id])
+
+  @@unique([patient_id, tablet_name])
 }
 
 enum BloodGroup {
