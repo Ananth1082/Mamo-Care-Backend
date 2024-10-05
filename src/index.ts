@@ -8,11 +8,13 @@ import { UserDetail } from "otpless-node-js-auth-sdk";
 import { removeUndefinedValues } from "../utils/filterObject";
 import { db } from "./db";
 import { randomUUID } from "crypto";
-import { sign } from "jsonwebtoken";
+import { sign,verify } from "jsonwebtoken";
 import { AppConfig } from "./config";
 
 AppConfig();
-
+//TODO get-session, 
+//TODO verify-jwt middleware ,
+//TODO  logout
 new Elysia()
   .use(
     logger({
@@ -78,9 +80,15 @@ new Elysia()
                   const new_patient = await db.patient.create({
                     data: patient,
                   });
-                  const secret
-                  if()
-                  return { otp: response, patient: new_patient };
+                  const secret = process.env.JWT_SECRET || "secret"
+                  const token = sign(new_patient.id,secret)
+                  await db.patientSession.create({
+                    data: {
+                      hashtoken: token,
+                      patient_id:new_patient.id
+                    }
+                  })
+                  return { otp: response, patient: new_patient,token:token  };
                 } else {
                   return { otp: response, patient: undefined };
                 }
@@ -101,7 +109,22 @@ new Elysia()
               }),
             }
           )
-          .get("/sign-in",()=> {
+          
+          .get("/get-session",({cookie})=> {
+            const token = cookie.accessToken.value
+            if (!token) {
+              throw new Error("Unauthorized! enter a token")
+            }
+            const secret = process.env.JWT_SECRET || 'secret'
+            const res = verify(token,secret)
+            const patient = 
+            return {}
+          },{
+            cookie: t.Object({
+              accessToken: t.String()
+            })
+          })
+          .get("/logout",()=>{
 
           })
       )

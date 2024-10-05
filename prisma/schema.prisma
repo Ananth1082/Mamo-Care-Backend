@@ -23,7 +23,7 @@ model Patient {
 }
 
 model PatientSession {
-  id         String  @id @unique
+  id         Int  @id @default(autoincrement())
   hashtoken  String
   patient    Patient @relation(fields: [patient_id], references: [id])
   patient_id String  @unique
