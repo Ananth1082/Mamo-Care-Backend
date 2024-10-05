@@ -11,13 +11,17 @@
     "@prisma/client": "^5.20.0",
     "@tqman/nice-logger": "^1.0.1",
     "@types/node": "^22.7.4",
+    "dotenv": "^16.4.5",
     "elysia": "latest",
+    "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
+    "otpless-node-js-auth-sdk": "^1.0.8",
     "prisma": "^5.20.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.6.2"
   },
   "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.7",
     "bun-types": "latest"
   },
   "module": "src/index.js"

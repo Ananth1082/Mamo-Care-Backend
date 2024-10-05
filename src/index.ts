@@ -1,9 +1,17 @@
-import { PrismaClient } from "@prisma/client";
 import { logger } from "@tqman/nice-logger";
 import { Elysia, t } from "elysia";
+import { Patient } from "@prisma/client";
 import { bgTypes, Medication } from "./types/types";
+//@ts-ignore
+import { UserDetail } from "otpless-node-js-auth-sdk";
+
 import { removeUndefinedValues } from "../utils/filterObject";
-const db = new PrismaClient();
+import { db } from "./db";
+import { randomUUID } from "crypto";
+import { sign } from "jsonwebtoken";
+import { AppConfig } from "./config";
+
+AppConfig();
 
 new Elysia()
   .use(
@@ -14,8 +22,89 @@ new Elysia()
   .group("/api", (app) =>
     app
       .get("/", () => {
-        return { name: "Elysia", version: "1.0.0" };
+        message: "pong";
       })
+      .group("/auth", (app) =>
+        app
+          .post(
+            "/send-otp",
+            async ({ body }) => {
+              const { phone_number } = body;
+              const orderId = randomUUID();
+              const clientID = process.env.OTPLESS_CLIENT_ID;
+              const clientSecret = process.env.OTPLESS_CLIENT_SECRET;
+              try {
+                const sendOTP = await UserDetail.sendOTP(
+                  phone_number,
+                  "",
+                  "SMS",
+                  process.env.OTPLESS_HASH,
+                  orderId,
+                  "60",
+                  "5",
+                  clientID,
+                  clientSecret
+                );
+                console.log("send otp response:", sendOTP);
+                return JSON.stringify(sendOTP);
+              } catch (error: unknown) {
+                console.error("Error:", JSON.stringify(error));
+                return JSON.stringify(error);
+              }
+            },
+            {
+              body: t.Object({
+                phone_number: t.String(),
+              }),
+            }
+          )
+          .post(
+            "/verify-otp",
+            async ({ body }) => {
+              const { patient, order_id, otp } = body;
+              const clientID = process.env.OTPLESS_CLIENT_ID;
+              const clientSecret = process.env.OTPLESS_CLIENT_SECRET;
+              try {
+                const response = await UserDetail.verifyOTP(
+                  "",
+                  patient.phone_number,
+                  order_id,
+                  otp,
+                  clientID,
+                  clientSecret
+                );
+                console.log(response);
+                if (response.isOTPVerified) {
+                  const new_patient = await db.patient.create({
+                    data: patient,
+                  });
+                  const secret
+                  if()
+                  return { otp: response, patient: new_patient };
+                } else {
+                  return { otp: response, patient: undefined };
+                }
+              } catch (error) {
+                return error;
+              }
+            },
+            {
+              body: t.Object({
+                patient: t.Object({
+                  id: t.String(),
+                  name: t.String(),
+                  phone_number: t.String(),
+                  blood_group: bgTypes,
+                }),
+                otp: t.String(),
+                order_id: t.String(),
+              }),
+            }
+          )
+          .get("/sign-in",()=> {
+
+          })
+      )
       .group("/patient", (app) =>
         app
           .get("/", async () => {
@@ -23,13 +112,15 @@ new Elysia()
             return patients;
           })
 
-          .get("/:id", async ({ params: { id } }) => {
-            return await db.patient.findFirst({
-              where: {
-                id: id,
-              },
-            });
-          })
+          .get(
+            "/:id",
+            async ({ params: { id } }) =>
+              await db.patient.findFirst({
+                where: {
+                  id: id,
+                },
+              })
+          )
 
           .post(
             "/",

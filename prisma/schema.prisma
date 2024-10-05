@@ -13,12 +13,20 @@ model Doctor {
 }
 
 model Patient {
-  id           String         @id
+  id           String          @id
   name         String
   phone_number String
   blood_group  BloodGroup
   forms        FormResponse[]
   meds         Medication[]
+  session      PatientSession?
+}
+
+model PatientSession {
+  id         String  @id @unique
+  hashtoken  String
+  patient    Patient @relation(fields: [patient_id], references: [id])
+  patient_id String  @unique
 }
 
 model FormResponse {
