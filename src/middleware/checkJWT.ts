@@ -1,0 +1,22 @@
+import { JwtPayload, verify } from "jsonwebtoken";
+import { db } from "../db";
+
+export async function CheckJWT(token: string) {
+  try {
+    const secret = process.env.JWT_SECRET || "secret";
+    const res = verify(token, secret) as JwtPayload;
+    console.log(parseInt(res.id));
+    
+    const sessionCount = await db.patientSession.count({
+      where: {
+        patient_id: res.id,
+      },
+    });
+
+    if (sessionCount !== 1) {
+      throw new Error("Invalid access token.");
+    }
+  } catch (err: unknown) {
+    console.error("Error checking token: " + err);
+  }
+}

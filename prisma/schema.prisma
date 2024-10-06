@@ -7,26 +7,43 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id           String    @id @default(uuid())
+  user_name    String
+  phone_number String    @unique
+  sessions     Session[]
+  role         Role      @default(Patient)
+  doctor       Doctor?
+  patient      Patient?
+}
+
 model Doctor {
-  id   Int    @id @default(autoincrement())
-  name String
+  doctor_id     String? @unique
+  user          User?   @relation(fields: [doctor_id], references: [id])
+  phone_number  String  @id
+  hospital_name String?
+  speciality    String?
 }
 
 model Patient {
-  id           String          @id
-  name         String
-  phone_number String
-  blood_group  BloodGroup
-  forms        FormResponse[]
-  meds         Medication[]
-  session      PatientSession?
+  user             User?          @relation(fields: [user_id], references: [id])
+  user_id          String?        @unique
+  ip_number        String         @id
+  blood_group      BloodGroup
+  forms            FormResponse[]
+  meds             Medication[]
+  patient_contacts String[]
 }
 
-model PatientSession {
-  id         Int  @id @default(autoincrement())
+model Session {
+  id         Int      @id @default(autoincrement())
   hashtoken  String
-  patient    Patient @relation(fields: [patient_id], references: [id])
-  patient_id String  @unique
+  user       User     @relation(fields: [user_id], references: [id])
+  user_id    String
+  created_at DateTime @default(now())
+  update_at  DateTime @default(now()) @updatedAt
+
+  @@unique([user_id, hashtoken])
 }
 
 model FormResponse {
@@ -36,7 +53,7 @@ model FormResponse {
   question1    String
   question2    String
   question3    String
-  patient      Patient  @relation(fields: [patient_id], references: [id])
+  patient      Patient  @relation(fields: [patient_id], references: [ip_number])
 
   @@unique([patient_id, submitted_at])
 }
@@ -53,7 +70,7 @@ model Medication {
   Friday      String[]
   Saturday    String[]
   Sunday      String[]
-  patient     Patient  @relation(fields: [patient_id], references: [id])
+  patient     Patient  @relation(fields: [patient_id], references: [ip_number])
 
   @@unique([patient_id, tablet_name])
 }
@@ -67,4 +84,9 @@ enum BloodGroup {
   Ominus
   ABplus
   ABminus
+}
+
+enum Role {
+  Doctor
+  Patient
 }

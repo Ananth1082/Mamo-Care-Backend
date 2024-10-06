@@ -8,13 +8,13 @@ import { UserDetail } from "otpless-node-js-auth-sdk";
 import { removeUndefinedValues } from "../utils/filterObject";
 import { db } from "./db";
 import { randomUUID } from "crypto";
-import { sign,verify } from "jsonwebtoken";
+import { JwtPayload, sign, verify } from "jsonwebtoken";
 import { AppConfig } from "./config";
+import middleware from "./middleware";
 
 AppConfig();
-//TODO get-session, 
-//TODO verify-jwt middleware ,
-//TODO  logout
+
+// Doctor is created already only need to link with a phone number
 new Elysia()
   .use(
     logger({
@@ -24,7 +24,9 @@ new Elysia()
   .group("/api", (app) =>
     app
       .get("/", () => {
-        message: "pong";
+        return {
+          message: "pong",
+        };
       })
       .group("/auth", (app) =>
         app
@@ -62,35 +64,68 @@ new Elysia()
           )
           .post(
             "/verify-otp",
-            async ({ body }) => {
-              const { patient, order_id, otp } = body;
+            async ({ body, query }) => {
+              const { user, order_id, otp } = body;
               const clientID = process.env.OTPLESS_CLIENT_ID;
               const clientSecret = process.env.OTPLESS_CLIENT_SECRET;
+              const { isDoctor } = query;
               try {
                 const response = await UserDetail.verifyOTP(
                   "",
-                  patient.phone_number,
+                  user.phone_number,
                   order_id,
                   otp,
                   clientID,
                   clientSecret
                 );
-                console.log(response);
+
                 if (response.isOTPVerified) {
-                  const new_patient = await db.patient.create({
-                    data: patient,
+                  const new_user = await db.user.create({
+                    data: user,
                   });
-                  const secret = process.env.JWT_SECRET || "secret"
-                  const token = sign(new_patient.id,secret)
-                  await db.patientSession.create({
-                    data: {
-                      hashtoken: token,
-                      patient_id:new_patient.id
+
+                  if (isDoctor) {
+                    const doctor = await db.doctor.update({
+                      data: {
+                        doctor_id: new_user.id,
+                      },
+                      where: {
+                        phone_number: user.phone_number,
+                      },
+                    });
+                    if (!doctor) {
+                      throw new Error("Phone number doesnt belong to a doctor");
                     }
-                  })
-                  return { otp: response, patient: new_patient,token:token  };
+                  }
+
+                  const patient = await db.patient.findFirst({
+                    where: {
+                      ip_number: user.ip_number,
+                    },
+                  });
+                  if (patient) {
+                    await db.patient.update({
+                      data: {
+                        user_id: new_user.id,
+                      },
+                      where: {
+                        ip_number: user.ip_number,
+                      },
+                    });
+                    const secret = process.env.JWT_SECRET || "secret";
+                    const token = sign({ id: new_user.id }, secret);
+                    await db.session.create({
+                      data: {
+                        hashtoken: token,
+                        user_id: new_user.id,
+                      },
+                    });
+                    return { otp: response, user: new_user, token: token };
+                  } else {
+                    throw new Error("Patient not registered ask your doctor");
+                  }
                 } else {
-                  return { otp: response, patient: undefined };
+                  return { otp: response, user: "not created" };
                 }
               } catch (error) {
                 return error;
@@ -98,35 +133,80 @@ new Elysia()
             },
             {
               body: t.Object({
-                patient: t.Object({
-                  id: t.String(),
-                  name: t.String(),
+                user: t.Object({
+                  user_name: t.String(),
                   phone_number: t.String(),
-                  blood_group: bgTypes,
+                  ip_number: t.Optional(t.String()),
                 }),
                 otp: t.String(),
                 order_id: t.String(),
               }),
+              query: t.Object({
+                isDoctor: t.Optional(t.Boolean()),
+              }),
             }
           )
-          
-          .get("/get-session",({cookie})=> {
-            const token = cookie.accessToken.value
-            if (!token) {
-              throw new Error("Unauthorized! enter a token")
-            }
-            const secret = process.env.JWT_SECRET || 'secret'
-            const res = verify(token,secret)
-            const patient = 
-            return {}
-          },{
-            cookie: t.Object({
-              accessToken: t.String()
-            })
+          .guard({
+            beforeHandle({ headers }) {
+              const authHeader = headers["authorization"];
+              if (!authHeader) {
+                throw new Error("Auth header missing");
+              }
+              const token = authHeader.split(" ")[1];
+              middleware.CheckJWT(token);
+            },
           })
-          .get("/logout",()=>{
 
+          .get("/get-session", async ({ headers }) => {
+            const authHeader = headers.authorization;
+            if (!authHeader) {
+              throw new Error("Unauthorized! enter a token");
+            }
+            const token = authHeader.split(" ")[1];
+            const secret = process.env.JWT_SECRET || "secret";
+            let res = verify(token, secret) as JwtPayload;
+            const session = db.session.findFirst({
+              where: {
+                user: {
+                  id: res.id,
+                },
+              },
+            });
+            return session;
           })
+          .get(
+            "/logout",
+            async ({ headers }) => {
+              try {
+                const authHeader = headers.authorization;
+                if (!authHeader) {
+                  throw new Error("Unauthorized! enter a token");
+                }
+                const token = authHeader.split(" ")[1];
+                const secret = process.env.JWT_SECRET || "secret";
+                let res = verify(token, secret) as JwtPayload;
+                const patient = await db.session.deleteMany({
+                  where: {
+                    user_id: res["id"] as string,
+                    hashtoken: token,
+                  },
+                });
+                console.log(res["id"]);
+
+                return {
+                  msg: "Successfully logged out of device",
+                  session: patient,
+                };
+              } catch (error: unknown) {
+                throw new Error("Error logging out " + JSON.stringify(error));
+              }
+            },
+            {
+              headers: t.Object({
+                authorization: t.String(),
+              }),
+            }
+          )
       )
       .group("/patient", (app) =>
         app
@@ -135,15 +215,23 @@ new Elysia()
             return patients;
           })
 
-          .get(
-            "/:id",
-            async ({ params: { id } }) =>
-              await db.patient.findFirst({
+          .get("/:id", async ({ params: { id } }) => {
+            try {
+              const patient = await db.patient.findFirst({
                 where: {
-                  id: id,
+                  ip_number: id,
                 },
-              })
-          )
+              });
+              if (patient) {
+                return patient;
+              } else {
+                throw new Error("Invalid ip number");
+              }
+            } catch (err: unknown) {
+              console.error(err);
+              return { err: "Error fetching patient details" };
+            }
+          })
 
           .post(
             "/",
@@ -155,7 +243,7 @@ new Elysia()
             },
             {
               body: t.Object({
-                id: t.String(),
+                ip_number: t.String(),
                 name: t.String(),
                 phone_number: t.String(),
                 blood_group: bgTypes,
@@ -164,17 +252,16 @@ new Elysia()
           )
 
           .put(
-            "/:id",
+            "/:ip_number",
             async ({ params, body }) => {
-              const { id } = params;
+              const { ip_number } = params;
               const { name, phone_number, blood_group } = body;
               try {
                 const patient = await db.patient.update({
                   where: {
-                    id,
+                    ip_number,
                   },
                   data: {
-                    ...(id ? { id } : {}),
                     ...(name ? { name } : {}),
                     ...(phone_number ? { phone_number } : {}),
                     ...(blood_group ? { blood_group } : {}),
@@ -202,17 +289,17 @@ new Elysia()
           .delete(
             "/",
             async ({ body }) => {
-              const { id } = body;
+              const { ip_number } = body;
               const patient = await db.patient.delete({
                 where: {
-                  id,
+                  ip_number,
                 },
               });
               return { msg: "Deleted patient", patient };
             },
             {
               body: t.Object({
-                id: t.String(),
+                ip_number: t.String(),
               }),
             }
           )
