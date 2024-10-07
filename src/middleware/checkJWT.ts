@@ -7,9 +7,9 @@ export async function CheckJWT(token: string) {
     const res = verify(token, secret) as JwtPayload;
     console.log(parseInt(res.id));
     
-    const sessionCount = await db.patientSession.count({
+    const sessionCount = await db.session.count({
       where: {
-        patient_id: res.id,
+        user_id: res.id,
       },
     });
 

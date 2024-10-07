@@ -96,6 +96,7 @@ new Elysia()
                     if (!doctor) {
                       throw new Error("Phone number doesnt belong to a doctor");
                     }
+                    return doctor
                   }
 
                   const patient = await db.patient.findFirst({
