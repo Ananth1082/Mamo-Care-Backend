@@ -1,5 +1,5 @@
 import Elysia from "elysia";
-import { authRoutes } from "./authRoutes";
+import { authRoutes } from "./auth.routes";
 import { formRoutes } from "./form.routes";
 import { medicationRoutes } from "./medication.routes";
 import { patientRoutes } from "./patient.routes";
