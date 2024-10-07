@@ -6,8 +6,8 @@ import { patientRoutes } from "./patient.routes";
 
 export const routes = new Elysia().group("/api", (app) =>
   app
-    .use(authRoutes)
-    .use(patientRoutes)
-    .use(formRoutes)
-    .use(medicationRoutes)
+    .use(authRoutes())
+    .use(patientRoutes())
+    .use(formRoutes())
+    .use(medicationRoutes())
 );
