@@ -10,12 +10,13 @@ export async function sendOTP(body: { phone_number: string }) {
   const orderId = randomUUID();
   const clientID = process.env.OTPLESS_CLIENT_ID;
   const clientSecret = process.env.OTPLESS_CLIENT_SECRET;
+  const hash = process.env.OTPLESS_HASH;
   try {
     const sendOTP = await UserDetail.sendOTP(
       phone_number,
       "",
       "SMS",
-      process.env.OTPLESS_HASH,
+      hash,
       orderId,
       "60",
       "5",
