@@ -9,19 +9,37 @@ export const bgTypes = t.Enum({
   "AB-": "ABminus",
   "O+": "Oplus",
   "O-": "Ominus",
-})
+});
 
-export const Medication = t.Object({
+export const Medication = t.Object(
+  {
+    patient_id: t.String(),
+    tablet_name: t.String(),
+    notes: t.String(),
+    Monday: t.Array(t.String()),
+    Tuesday: t.Array(t.String()),
+    Wednesday: t.Array(t.String()),
+    Thursday: t.Array(t.String()),
+    Friday: t.Array(t.String()),
+    Saturday: t.Array(t.String()),
+    Sunday: t.Array(t.String()),
+  },
+  {
+    additionalProperties: false,
+  }
+);
+
+export const MedicalForm = t.Object({
   patient_id: t.String(),
-  tablet_name: t.String(),
-  notes: t.String(),
-  Monday:t.Array(t.String()),
-  Tuesday:t.Array(t.String()),
-  Wednesday:t.Array(t.String()),
-  Thursday:t.Array(t.String()),
-  Friday:t.Array(t.String()),
-  Saturday:t.Array(t.String()),
-  Sunday:t.Array(t.String()),
-},{
-  additionalProperties:false
-})
+  submitted_at: t.String(),
+  question1: t.String(),
+  question2: t.String(),
+  question3: t.String(),
+});
+
+export const Patient = t.Object({
+  ip_number: t.String(),
+  name: t.String(),
+  phone_number: t.String(),
+  blood_group: bgTypes,
+});

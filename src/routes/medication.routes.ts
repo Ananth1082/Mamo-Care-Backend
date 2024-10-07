@@ -1,41 +1,28 @@
 import Elysia, { t } from "elysia";
-import { removeUndefinedValues } from "../../utils/filterObject";
-import { db } from "../db";
 import { Medication } from "../types/types";
+import {
+  createMedication,
+  createPrescription,
+  deleteMedication,
+  deletePrescription,
+  getAllMedications,
+  getMedicationByID,
+  getMedicationByPatient,
+  updateMedication,
+} from "../controllers/medication.controllers";
 
 export const medicationRoutes = () => (app: Elysia) =>
   app.group("/medication", (app) =>
     app
-      .get("/", async () => {
-        return await db.medication.findMany();
+      .get("/", getAllMedications)
+      .get("/:id", ({ params }) => getMedicationByID(params), {
+        params: t.Object({
+          id: t.Numeric(),
+        }),
       })
-
-      .get(
-        "/:id",
-        async ({ params }) => {
-          const { id } = params;
-          return await db.medication.findFirst({
-            where: {
-              id,
-            },
-          });
-        },
-        {
-          params: t.Object({
-            id: t.Numeric(),
-          }),
-        }
-      )
       .get(
         "/patient/:patient_id",
-        async ({ params }) => {
-          const { patient_id } = params;
-          return await db.medication.findMany({
-            where: {
-              patient_id,
-            },
-          });
-        },
+        ({ params }) => getMedicationByPatient(params),
         {
           params: t.Object({
             patient_id: t.String(),
@@ -43,91 +30,31 @@ export const medicationRoutes = () => (app: Elysia) =>
         }
       )
       //adding a tablet to the prescription
-      .post(
-        "/",
-        async ({ body }) => {
-          return await db.medication.create({
-            data: body,
-          });
-        },
-        {
-          body: Medication,
-        }
-      )
+      .post("/", ({ body }) => createMedication(body), {
+        body: Medication,
+      })
       //create a
-      .post(
-        "/patient",
-        async ({ body }) => {
-          return db.medication.createMany({
-            data: body.prescription,
-          });
-        },
-        {
-          body: t.Object({
-            prescription: t.Array(Medication),
-          }),
-        }
-      )
-      .put(
-        "/:id",
-        async ({ params, body }) => {
-          const { id } = params;
-          return await db.medication.update({
-            where: {
-              id,
-            },
-            data: removeUndefinedValues(body),
-          });
-        },
-        {
-          params: t.Object({
-            id: t.Numeric(),
-          }),
-          body: Medication,
-        }
-      )
+      .post("/patient", ({ body }) => createPrescription(body), {
+        body: t.Object({
+          prescription: t.Array(Medication),
+        }),
+      })
+      .put("/:id", ({ body, params }) => updateMedication(params,body), {
+        params: t.Object({
+          id: t.Numeric(),
+        }),
+        body: Medication,
+      })
       //delete a prescription of a tablet
-      .delete(
-        "/",
-        async ({ body }) => {
-          const { id } = body;
-          try {
-            return await db.medication.delete({
-              where: {
-                id,
-              },
-            });
-          } catch (err: unknown) {
-            console.log("Error occured while deleting " + err);
-          }
-        },
-        {
-          body: t.Object({
-            id: t.Numeric(),
-          }),
-        }
-      )
+      .delete("/", ({ body }) => deleteMedication(body), {
+        body: t.Object({
+          id: t.Numeric(),
+        }),
+      })
       //delete a patient prescription
-      .delete(
-        "/patient",
-        ({ body }) => {
-          const { patient_id } = body;
-          try {
-            return db.medication.deleteMany({
-              where: {
-                patient_id,
-              },
-            });
-          } catch (error: unknown) {
-            console.log(
-              "Error occured while deleting patient medication " + error
-            );
-          }
-        },
-        {
-          body: t.Object({
-            patient_id: t.String(),
-          }),
-        }
-      )
+      .delete("/patient", ({ body }) => deletePrescription(body), {
+        body: t.Object({
+          patient_id: t.String(),
+        }),
+      })
   );

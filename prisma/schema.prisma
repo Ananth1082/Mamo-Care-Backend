@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "cockroachdb"
   url      = env("DATABASE_URL")
 }
 
@@ -36,7 +36,7 @@ model Patient {
 }
 
 model Session {
-  id         Int      @id @default(autoincrement())
+  id         Int      @id @default(sequence())
   hashtoken  String
   user       User     @relation(fields: [user_id], references: [id])
   user_id    String
@@ -47,7 +47,7 @@ model Session {
 }
 
 model FormResponse {
-  id           Int      @id @default(autoincrement())
+  id           Int      @id @default(sequence())
   patient_id   String
   submitted_at DateTime
   question1    String
@@ -59,7 +59,7 @@ model FormResponse {
 }
 
 model Medication {
-  id          Int      @id @default(autoincrement())
+  id          Int      @id @default(sequence())
   patient_id  String
   tablet_name String
   notes       String
