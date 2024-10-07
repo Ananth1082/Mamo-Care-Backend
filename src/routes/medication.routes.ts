@@ -27,7 +27,7 @@ export const medicationRoutes = () => (app: Elysia) =>
         }
       )
       .get(
-        "/patient/:pid",
+        "/patient/:patient_id",
         async ({ params }) => {
           const { patient_id } = params;
           return await db.medication.findMany({

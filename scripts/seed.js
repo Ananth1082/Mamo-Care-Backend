@@ -1,5 +1,4 @@
 import { PrismaClient } from "@prisma/client";
-import Patient from "@prisma/client";
 
 const client = new PrismaClient();
 client.$connect;
@@ -35,8 +34,84 @@ const patients = [
     patient_contacts: ["917804675082"],
   },
 ];
-await client.doctor.deleteMany()
-await client.patient.deleteMany()
+
+const medications = [
+  {
+    patient_id: "8bdc3c21-904d-4338-867f-e3e0bead11c1",
+    tablet_name: "Ampicillin",
+    notes: "This is a note",
+    Monday: ["1BF","2AF","0"],
+    Tuesday: ["1BF","2AF","0"],
+    Wednesday: ["1BF","2AF","0"],
+    Thursday: ["1BF","2AF","0"],
+    Friday: ["1BF","2AF","0"],
+    Saturday: ["1BF","2AF","0"],
+    Sunday: ["1BF","2AF","0"],
+  },
+  {
+    patient_id: "8bdc3c21-904d-4338-867f-e3e0bead11c1",
+    tablet_name: "Isosorbide Mononitrate",
+    notes: "This is a note",
+    Monday: ["1BF","2AF","0"],
+    Tuesday: ["1BF","2AF","0"],
+    Wednesday: ["1BF","2AF","0"],
+    Thursday: ["1BF","2AF","0"],
+    Friday: ["1BF","2AF","0"],
+    Saturday: ["1BF","2AF","0"],
+    Sunday: ["1BF","2AF","0"],
+  },
+  {
+    patient_id: "8bdc3c21-904d-4338-867f-e3e0bead11c1",
+    tablet_name: "Hydrochlorothiazide",
+    notes: "This is a note",
+    Monday: ["1BF","2AF","0"],
+    Tuesday: ["1BF","2AF","0"],
+    Wednesday: ["1BF","2AF","0"],
+    Thursday: ["1BF","2AF","0"],
+    Friday: ["1BF","2AF","0"],
+    Saturday: ["1BF","2AF","0"],
+    Sunday: ["1BF","2AF","0"],
+  },
+  {
+    patient_id: "8bdc3c21-904d-4338-867f-e3e0bead11c1",
+    tablet_name: "Nuvigil",
+    notes: "This is a note",
+    Monday: ["1BF","2AF","0"],
+    Tuesday: ["1BF","2AF","0"],
+    Wednesday: ["1BF","2AF","0"],
+    Thursday: ["1BF","2AF","0"],
+    Friday: ["1BF","2AF","0"],
+    Saturday: ["1BF","2AF","0"],
+    Sunday: ["1BF","2AF","0"],
+  },
+  {
+    patient_id: "f153bdc2-134c-454e-a09a-180f0e21d990",
+    tablet_name: "Topiramate",
+    notes: "This is a note",
+    Monday: ["1BF","2AF","0"],
+    Tuesday: ["1BF","2AF","0"],
+    Wednesday: ["1BF","2AF","0"],
+    Thursday: ["1BF","2AF","0"],
+    Friday: ["1BF","2AF","0"],
+    Saturday: ["1BF","2AF","0"],
+    Sunday: ["1BF","2AF","0"],
+  },
+  {
+    patient_id: "f153bdc2-134c-454e-a09a-180f0e21d990",
+    tablet_name: "Clarithromycin",
+    notes: "This is a note",
+    Monday: ["1BF","2AF","0"],
+    Tuesday: ["1BF","2AF","0"],
+    Wednesday: ["1BF","2AF","0"],
+    Thursday: ["1BF","2AF","0"],
+    Friday: ["1BF","2AF","0"],
+    Saturday: ["1BF","2AF","0"],
+    Sunday: ["1BF","2AF","0"],
+  },
+];
+await client.doctor.deleteMany();
+await client.patient.deleteMany();
+await client.medication.deleteMany();
 
 console.log("Creating doctor...");
 await client.doctor.create({
@@ -47,6 +122,13 @@ console.log("Creating patients...");
 
 await client.patient.createMany({
   data: patients,
+});
+
+
+console.log("Creating medication...");
+
+await client.medication.createMany({
+  data: medications,
 });
 
 client.$disconnect;

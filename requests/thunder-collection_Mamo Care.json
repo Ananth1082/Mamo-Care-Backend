@@ -1,0 +1,285 @@
+{
+    "clientName": "Thunder Client",
+    "collectionName": "Mamo Care",
+    "collectionId": "c6d97959-a5f4-48ce-822c-299250910f19",
+    "dateExported": "2024-10-07T14:45:03.941Z",
+    "version": "1.2",
+    "folders": [
+        {
+            "_id": "cb3d255a-2ebe-4167-ace4-d3dac02305d2",
+            "name": "auth",
+            "containerId": "",
+            "created": "2024-10-05T20:15:20.673Z",
+            "sortNum": 10000
+        },
+        {
+            "_id": "8b56f737-7441-4f22-96e3-313c04d4c153",
+            "name": "patient",
+            "containerId": "",
+            "created": "2024-10-05T20:16:04.779Z",
+            "sortNum": 20000
+        },
+        {
+            "_id": "be98911e-7667-4968-b486-1516a7d692a4",
+            "name": "medication",
+            "containerId": "",
+            "created": "2024-10-05T20:16:48.175Z",
+            "sortNum": 30000
+        },
+        {
+            "_id": "449d8c71-2a9f-40e7-9733-004d2695434e",
+            "name": "form",
+            "containerId": "",
+            "created": "2024-10-07T14:38:34.882Z",
+            "sortNum": 40000
+        }
+    ],
+    "requests": [
+        {
+            "_id": "b8bd406b-68e4-4c72-be3a-e621861e4f7e",
+            "colId": "c6d97959-a5f4-48ce-822c-299250910f19",
+            "containerId": "8b56f737-7441-4f22-96e3-313c04d4c153",
+            "name": "Get patient by ID",
+            "url": "localhost:3000/api/patient/13ca9f25-6448-4845-9105-910ca0e23737",
+            "method": "GET",
+            "sortNum": 10000,
+            "created": "2024-10-03T18:03:08.913Z",
+            "modified": "2024-10-07T14:11:39.222Z",
+            "headers": []
+        },
+        {
+            "_id": "6d826e92-f810-4398-9e22-1c62419c5dc6",
+            "colId": "c6d97959-a5f4-48ce-822c-299250910f19",
+            "containerId": "be98911e-7667-4968-b486-1516a7d692a4",
+            "name": "Get medication",
+            "url": "localhost:3000/api/medication",
+            "method": "GET",
+            "sortNum": 10000,
+            "created": "2024-10-04T06:48:33.979Z",
+            "modified": "2024-10-07T14:16:09.322Z",
+            "headers": []
+        },
+        {
+            "_id": "5e4d5234-c8ff-4b95-877c-180c54fe9ab8",
+            "colId": "c6d97959-a5f4-48ce-822c-299250910f19",
+            "containerId": "cb3d255a-2ebe-4167-ace4-d3dac02305d2",
+            "name": "verify otp",
+            "url": "localhost:3000/api/auth/verify-otp?isDoctor=true",
+            "method": "POST",
+            "sortNum": 10000,
+            "created": "2024-10-05T20:12:53.912Z",
+            "modified": "2024-10-07T06:40:52.855Z",
+            "headers": [],
+            "params": [
+                {
+                    "name": "isDoctor",
+                    "value": "true",
+                    "isPath": false
+                }
+            ],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"user\":{\n    \"user_name\":\"Varun Pai\",\n    \"phone_number\":\"919353798875\"\n  },\n  \"otp\":\"570333\",\n  \"order_id\":\"49820b28-b87e-49bf-9a01-efd7a8a7adba\"\n}",
+                "form": []
+            }
+        },
+        {
+            "_id": "e97f1f5e-5680-4deb-8414-764cde3829ef",
+            "colId": "c6d97959-a5f4-48ce-822c-299250910f19",
+            "containerId": "8b56f737-7441-4f22-96e3-313c04d4c153",
+            "name": "Get patients",
+            "url": "localhost:3000/api/patient",
+            "method": "GET",
+            "sortNum": 20000,
+            "created": "2024-10-03T18:03:53.403Z",
+            "modified": "2024-10-03T18:04:02.226Z",
+            "headers": []
+        },
+        {
+            "_id": "bec691e5-09ea-4d7e-b59a-5f315e597bd2",
+            "colId": "c6d97959-a5f4-48ce-822c-299250910f19",
+            "containerId": "cb3d255a-2ebe-4167-ace4-d3dac02305d2",
+            "name": "send otp",
+            "url": "localhost:3000/api/auth/send-otp",
+            "method": "POST",
+            "sortNum": 20000,
+            "created": "2024-10-04T19:17:46.248Z",
+            "modified": "2024-10-06T05:21:23.406Z",
+            "headers": [
+                {
+                    "name": "Cookie",
+                    "value": "accessToken="
+                }
+            ],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"phone_number\":\"919353798875\"\n}",
+                "form": []
+            }
+        },
+        {
+            "_id": "f302da8a-b584-4f31-92fb-88c3616461cd",
+            "colId": "c6d97959-a5f4-48ce-822c-299250910f19",
+            "containerId": "8b56f737-7441-4f22-96e3-313c04d4c153",
+            "name": "Update patient details",
+            "url": "localhost:3000/api/patient/13ca9f25-6448-4845-9105-910ca0e23737",
+            "method": "PUT",
+            "sortNum": 30000,
+            "created": "2024-10-03T18:06:48.464Z",
+            "modified": "2024-10-07T14:12:41.063Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"blood_group\":\"ABplus\"\n}",
+                "form": []
+            }
+        },
+        {
+            "_id": "0de3a2e3-7eac-4a42-9b65-1edd9d8c93bf",
+            "colId": "c6d97959-a5f4-48ce-822c-299250910f19",
+            "containerId": "8b56f737-7441-4f22-96e3-313c04d4c153",
+            "name": "Delete a patient",
+            "url": "localhost:3000/api/patient",
+            "method": "DELETE",
+            "sortNum": 40000,
+            "created": "2024-10-04T06:49:54.409Z",
+            "modified": "2024-10-07T14:13:46.303Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"ip_number\" : \"13ca9f25-6448-4845-9105-910ca0e23737\"\n}",
+                "form": []
+            }
+        },
+        {
+            "_id": "6f13819c-98f1-4228-9d97-e5be16a9c463",
+            "colId": "c6d97959-a5f4-48ce-822c-299250910f19",
+            "containerId": "8b56f737-7441-4f22-96e3-313c04d4c153",
+            "name": "Create patient",
+            "url": "localhost:3000/api/patient",
+            "method": "POST",
+            "sortNum": 50000,
+            "created": "2024-10-03T18:04:22.626Z",
+            "modified": "2024-10-04T06:52:53.012Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"id\":\"nsfkjndsfkj12\",\n  \"name\":\"102039\",\n  \"phone_number\":\"+9132894334848\",\n  \"blood_group\":\"Bminus\"\n}",
+                "form": []
+            }
+        },
+        {
+            "_id": "9c3fd770-3670-4a9c-88d8-e7ddec6ec910",
+            "colId": "c6d97959-a5f4-48ce-822c-299250910f19",
+            "containerId": "cb3d255a-2ebe-4167-ace4-d3dac02305d2",
+            "name": "get session",
+            "url": "localhost:3000/api/auth/get-session",
+            "method": "GET",
+            "sortNum": 60000,
+            "created": "2024-10-06T05:03:25.119Z",
+            "modified": "2024-10-06T06:05:03.345Z",
+            "headers": [],
+            "auth": {
+                "type": "bearer",
+                "bearer": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJpYXQiOjE3MjgxOTQ2ODh9.WtDNvx1bwtDUB62uSkWkZtjkdwYz0bXjkf_ArAvfAqs"
+            }
+        },
+        {
+            "_id": "43f5041a-07a9-455b-80b9-3e292c0775ef",
+            "colId": "c6d97959-a5f4-48ce-822c-299250910f19",
+            "containerId": "cb3d255a-2ebe-4167-ace4-d3dac02305d2",
+            "name": "log out",
+            "url": "localhost:3000/api/auth/logout",
+            "method": "GET",
+            "sortNum": 80000,
+            "created": "2024-10-06T05:03:59.186Z",
+            "modified": "2024-10-06T06:05:18.111Z",
+            "headers": [],
+            "auth": {
+                "type": "bearer",
+                "bearer": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJpYXQiOjE3MjgxOTQ2ODh9.WtDNvx1bwtDUB62uSkWkZtjkdwYz0bXjkf_ArAvfAqs"
+            }
+        },
+        {
+            "_id": "7b54815d-2c3f-48cd-896c-271e911c2bd5",
+            "colId": "c6d97959-a5f4-48ce-822c-299250910f19",
+            "containerId": "be98911e-7667-4968-b486-1516a7d692a4",
+            "name": "get medication for patient",
+            "url": "localhost:3000/api/medication/patient/8bdc3c21-904d-4338-867f-e3e0bead11c1",
+            "method": "GET",
+            "sortNum": 90000,
+            "created": "2024-10-07T14:28:58.427Z",
+            "modified": "2024-10-07T14:30:39.885Z",
+            "headers": []
+        },
+        {
+            "_id": "c6c7282e-0208-43d1-9d5b-d63285bb8a25",
+            "colId": "c6d97959-a5f4-48ce-822c-299250910f19",
+            "containerId": "be98911e-7667-4968-b486-1516a7d692a4",
+            "name": "create a prescription",
+            "url": "localhost:3000/api/medication",
+            "method": "POST",
+            "sortNum": 100000,
+            "created": "2024-10-07T14:32:22.152Z",
+            "modified": "2024-10-07T14:35:44.125Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n    \"patient_id\": \"af194886-e9ba-4c72-b39d-339376f4481c\",\n    \"tablet_name\": \"Topiramate\",\n    \"notes\": \"This is a note\",\n    \"Monday\": [\"1BF\",\"2AF\",\"0\"],\n    \"Tuesday\": [\"1BF\",\"2AF\",\"0\"],\n    \"Wednesday\": [\"1BF\",\"2AF\",\"0\"],\n    \"Thursday\": [\"1BF\",\"2AF\",\"0\"],\n    \"Friday\": [\"1BF\",\"2AF\",\"0\"],\n    \"Saturday\": [\"1BF\",\"2AF\",\"0\"],\n    \"Sunday\": [\"1BF\",\"2AF\",\"0\"]\n}",
+                "form": []
+            }
+        },
+        {
+            "_id": "caa84fb3-8a67-4797-87de-0aaa69a874aa",
+            "colId": "c6d97959-a5f4-48ce-822c-299250910f19",
+            "containerId": "be98911e-7667-4968-b486-1516a7d692a4",
+            "name": "delete prescription",
+            "url": "localhost:3000/api/medication",
+            "method": "DELETE",
+            "sortNum": 110000,
+            "created": "2024-10-07T14:36:24.418Z",
+            "modified": "2024-10-07T14:39:37.944Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"id\": 5\n}",
+                "form": []
+            }
+        },
+        {
+            "_id": "df349bbd-749b-4df1-ba8d-5cbdd4429bf7",
+            "colId": "c6d97959-a5f4-48ce-822c-299250910f19",
+            "containerId": "be98911e-7667-4968-b486-1516a7d692a4",
+            "name": "delete prescription for a patient",
+            "url": "localhost:3000/api/medication/patient",
+            "method": "DELETE",
+            "sortNum": 120000,
+            "created": "2024-10-07T14:36:38.508Z",
+            "modified": "2024-10-07T14:40:26.368Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"patient_id\":\"8bdc3c21-904d-4338-867f-e3e0bead11c1\"\n}",
+                "form": []
+            }
+        },
+        {
+            "_id": "4abc58a0-c06d-4ac2-8def-6c5850a1af4a",
+            "colId": "c6d97959-a5f4-48ce-822c-299250910f19",
+            "containerId": "be98911e-7667-4968-b486-1516a7d692a4",
+            "name": "update prescription",
+            "url": "localhost:3000/api/medication/9",
+            "method": "PUT",
+            "sortNum": 130000,
+            "created": "2024-10-07T14:36:57.981Z",
+            "modified": "2024-10-07T14:43:02.059Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"patient_id\": \"8bdc3c21-904d-4338-867f-e3e0bead11c1\",\n    \"tablet_name\": \"Ampicillin\",\n    \"notes\": \"This is a note\",\n    \"Monday\": [\"1BF\",\"2AF\",\"3AF\"],\n    \"Tuesday\": [\"1BF\",\"2AF\",\"0\"],\n    \"Wednesday\": [\"1BF\",\"2AF\",\"0\"],\n    \"Thursday\": [\"1BF\",\"2AF\",\"0\"],\n    \"Friday\": [\"1BF\",\"2AF\",\"0\"],\n    \"Saturday\": [\"1BF\",\"2AF\",\"0\"],\n    \"Sunday\": [\"1BF\",\"2AF\",\"0\"]\n  \n}",
+                "form": []
+            }
+        }
+    ],
+    "ref": "LGwD17oe0AJpC_VHiOMI1G_qFS49gQyRktg_rbL9nQBJC6-GuwyzUxweC6uNRJ0UpLVYHOlbomU5GVgeiOfMwA"
+}
