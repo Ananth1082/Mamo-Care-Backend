@@ -5,7 +5,6 @@ export async function CheckJWT(token: string) {
   try {
     const secret = process.env.JWT_SECRET || "secret";
     const res = verify(token, secret) as JwtPayload;
-    console.log(parseInt(res.id));
     
     const sessionCount = await db.session.count({
       where: {
