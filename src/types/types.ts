@@ -32,14 +32,12 @@ export const Medication = t.Object(
 export const MedicalForm = t.Object({
   patient_id: t.String(),
   submitted_at: t.String(),
-  question1: t.String(),
-  question2: t.String(),
-  question3: t.String(),
+  responses : t.Array(t.String()),
 });
 
 export const Patient = t.Object({
   ip_number: t.String(),
-  name: t.String(),
+  patient_name: t.String(),
   phone_number: t.String(),
   blood_group: bgTypes,
 });

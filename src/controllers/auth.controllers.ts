@@ -3,7 +3,7 @@ import { JwtPayload, sign, verify } from "jsonwebtoken";
 //@ts-ignore
 import { UserDetail } from "otpless-node-js-auth-sdk";
 import { db } from "../db";
-import { UnauthorizedError } from "../Errors/user.error";
+import { InvalidPhoneError, UnauthorizedError } from "../Errors/user.error";
 
 export async function sendOTP(body: { phone_number: string }) {
   const { phone_number } = body;
@@ -15,7 +15,7 @@ export async function sendOTP(body: { phone_number: string }) {
     const sendOTP = await UserDetail.sendOTP(
       phone_number,
       "",
-      "SMS",
+      "WHATSAPP",
       hash,
       orderId,
       "60",
@@ -32,7 +32,7 @@ export async function sendOTP(body: { phone_number: string }) {
 }
 
 interface verifyOTPBody {
-  user: { user_name: string; phone_number: string; ip_number?: string };
+  user: { phone_number: string; ip_number?: string };
   otp: string;
   order_id: string;
 }
@@ -70,7 +70,7 @@ export async function verifyOTP(
           },
         });
         if (!doctor) {
-          throw new Error("Phone number doesnt belong to a doctor");
+          throw InvalidPhoneError;
         }
         return doctor;
       }

@@ -30,9 +30,7 @@ export async function getFormByUserAndTime({
 interface MedicalForm {
   patient_id: string;
   submitted_at: string;
-  question1: string;
-  question2: string;
-  question3: string;
+  responses : string[]
 }
 
 export async function createForm(body: MedicalForm) {

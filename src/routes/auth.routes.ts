@@ -13,9 +13,9 @@ export const authRoutes = () => (app: Elysia) =>
     app
       .post(
         "/send-otp",
-        ({ body, set }) => {
+        async ({ body, set }) => {
           set.headers["content-type"] = "text/json";
-          return sendOTP(body);
+          return await sendOTP(body);
         },
         {
           body: t.Object({
@@ -27,7 +27,7 @@ export const authRoutes = () => (app: Elysia) =>
         "/verify-otp",
         ({ body, query, set }) => {
           set.headers["content-type"] = "text/json";
-          verifyOTP(body, query);
+          return verifyOTP(body, query);
         },
         {
           body: VerifyOTPReqBody,
@@ -37,8 +37,7 @@ export const authRoutes = () => (app: Elysia) =>
         }
       )
       .guard({
-        beforeHandle({ headers,set }) {
-          
+        beforeHandle({ headers, set }) {
           const authHeader = headers["authorization"];
           if (!authHeader) {
             throw new Error("Auth header missing");
@@ -48,8 +47,16 @@ export const authRoutes = () => (app: Elysia) =>
         },
       })
 
-      .get("/get-session", ({ headers }) => getSession(headers))
-      .get("/logout", ({ headers }) => logout(headers), {
-        headers: JWTHeader,
+      .get("/get-session", ({ headers }) => {
+        return getSession(headers);
       })
+      .get(
+        "/logout",
+        ({ headers }) => {
+          return logout(headers);
+        },
+        {
+          headers: JWTHeader,
+        }
+      )
   );

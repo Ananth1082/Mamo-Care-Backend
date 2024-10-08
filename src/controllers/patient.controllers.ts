@@ -26,7 +26,7 @@ export async function getAllPatient() {
 
 interface Patient {
   ip_number: string;
-  name: string;
+  patient_name: string;
   phone_number: string;
   blood_group: BloodGroup;
 }

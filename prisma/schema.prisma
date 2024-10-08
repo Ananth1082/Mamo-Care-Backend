@@ -9,7 +9,6 @@ datasource db {
 
 model User {
   id           String    @id @default(uuid())
-  user_name    String
   phone_number String    @unique
   sessions     Session[]
   role         Role      @default(Patient)
@@ -18,6 +17,7 @@ model User {
 }
 
 model Doctor {
+  doctor_name   String
   doctor_id     String? @unique
   user          User?   @relation(fields: [doctor_id], references: [id])
   phone_number  String  @id
@@ -26,6 +26,7 @@ model Doctor {
 }
 
 model Patient {
+  patient_name     String
   user             User?          @relation(fields: [user_id], references: [id])
   user_id          String?        @unique
   ip_number        String         @id
@@ -50,9 +51,7 @@ model FormResponse {
   id           Int      @id @default(sequence())
   patient_id   String
   submitted_at DateTime
-  question1    String
-  question2    String
-  question3    String
+  responses    String[]
   patient      Patient  @relation(fields: [patient_id], references: [ip_number])
 
   @@unique([patient_id, submitted_at])
