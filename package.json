@@ -16,7 +16,6 @@
     "dotenv": "^16.4.5",
     "elysia": "latest",
     "jsonwebtoken": "^9.0.2",
-    "morgan": "^1.10.0",
     "otpless-node-js-auth-sdk": "^1.0.8",
     "prisma": "^5.20.0",
     "ts-node": "^10.9.2",
