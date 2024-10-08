@@ -1,7 +1,6 @@
 import { BloodGroup } from "@prisma/client";
 import { db } from "../db";
 import { removeUndefinedValues } from "../../utils/filterObject";
-import { RecordWithTtl } from "dns";
 
 export async function getPatientById({ id }: { id: string }) {
   try {
