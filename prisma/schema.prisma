@@ -19,7 +19,7 @@ model User {
 model Doctor {
   doctor_name   String
   doctor_id     String? @unique
-  user          User?   @relation(fields: [doctor_id], references: [id])
+  user          User?   @relation(fields: [doctor_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
   phone_number  String  @id
   hospital_name String?
   speciality    String?
@@ -27,7 +27,7 @@ model Doctor {
 
 model Patient {
   patient_name     String
-  user             User?          @relation(fields: [user_id], references: [id])
+  user             User?          @relation(fields: [user_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
   user_id          String?        @unique
   ip_number        String         @id
   blood_group      BloodGroup
@@ -39,7 +39,7 @@ model Patient {
 model Session {
   id         Int      @id @default(sequence())
   hashtoken  String
-  user       User     @relation(fields: [user_id], references: [id])
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
   user_id    String
   created_at DateTime @default(now())
   update_at  DateTime @default(now()) @updatedAt
@@ -52,7 +52,7 @@ model FormResponse {
   patient_id   String
   submitted_at DateTime
   responses    String[]
-  patient      Patient  @relation(fields: [patient_id], references: [ip_number])
+  patient      Patient  @relation(fields: [patient_id], references: [ip_number], onDelete: Cascade, onUpdate: Cascade)
 
   @@unique([patient_id, submitted_at])
 }
@@ -69,7 +69,7 @@ model Medication {
   Friday      String[]
   Saturday    String[]
   Sunday      String[]
-  patient     Patient  @relation(fields: [patient_id], references: [ip_number])
+  patient     Patient  @relation(fields: [patient_id], references: [ip_number], onDelete: Cascade, onUpdate: Cascade)
 
   @@unique([patient_id, tablet_name])
 }
