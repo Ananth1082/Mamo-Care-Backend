@@ -38,6 +38,5 @@ export const MedicalForm = t.Object({
 export const Patient = t.Object({
   ip_number: t.String(),
   patient_name: t.String(),
-  phone_number: t.String(),
   blood_group: bgTypes,
 });
