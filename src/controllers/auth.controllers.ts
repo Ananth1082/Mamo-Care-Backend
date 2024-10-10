@@ -75,7 +75,11 @@ export async function verifyOTP(
         if (!doctor) {
           throw InvalidPhoneError;
         }
-        return doctor;
+        return new Response(JSON.stringify(doctor), {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
       }
 
       const patient = await db.patient.findFirst({
@@ -100,7 +104,12 @@ export async function verifyOTP(
             user_id: new_user.id,
           },
         });
-        return { otp: response, user: new_user, token: token };
+        return new Response(
+          JSON.stringify({ otp: response, user: new_user, token: token }),
+          {
+            headers: { "Content-Type": "application/json" },
+          }
+        );
       } else {
         throw new Error("Patient not registered ask your doctor");
       }
