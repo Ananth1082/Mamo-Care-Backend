@@ -1,4 +1,4 @@
-import { BloodGroup, Patient } from "@prisma/client";
+import { $Enums } from "@prisma/client";
 import { db } from "../db";
 import { removeUndefinedValues } from "../../utils/filterObject";
 
@@ -22,6 +22,19 @@ export async function getPatientById({ id }: { id: string }) {
 
 export async function getAllPatient() {
   return await db.patient.findMany();
+}
+
+interface Patient {
+  patient_name: string;
+  ip_number: string;
+  blood_group: $Enums.BloodGroup;
+  patient_contacts: string[];
+  height?: number;
+  weight?: number;
+  dob?: string;
+  doa?: string;
+  dod?: string;
+  dose?: string;
 }
 
 export async function createPatient(new_patient: Patient) {

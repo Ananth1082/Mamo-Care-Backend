@@ -11,11 +11,11 @@ import { VerifyOTPReqBody, JWTHeader } from "../types/auth";
 export const authRoutes = () => (app: Elysia) =>
   app.group("/auth", (app) =>
     app
-      .post("/send-otp", ({ body }) => sendOTP(body), {
-        body: t.Object({
-          phone_number: t.String(),
-        }),
-      })
+      // .post("/send-otp", ({ body }) => sendOTP(body), {
+      //   body: t.Object({
+      //     phone_number: t.String(),
+      //   }),
+      // })
       .post(
         "/verify-otp",
         ({ body, query, set }) => {
