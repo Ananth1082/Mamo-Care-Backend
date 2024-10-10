@@ -25,7 +25,6 @@ export async function sendOTP(body: { phone_number: string }) {
     );
     console.log("send otp response:", sendOTP);
     return orderId;
-
   } catch (error: unknown) {
     console.error("Error:", JSON.stringify(error));
     return JSON.stringify(error);
@@ -58,7 +57,10 @@ export async function verifyOTP(
 
     if (response.isOTPVerified) {
       const new_user = await db.user.create({
-        data: user,
+        data: {
+          role: isDoctor ? "Doctor" : "Patient",
+          phone_number: user.phone_number,
+        },
       });
 
       if (isDoctor) {
