@@ -31,9 +31,15 @@ model Patient {
   user_id          String?        @unique
   ip_number        String         @id
   blood_group      BloodGroup
+  patient_contacts String[]
+  height           Int?
+  weight           Float?
+  dob              String?
+  doa              String?
+  dod              String?
+  dose             String?
   forms            FormResponse[]
   meds             Medication[]
-  patient_contacts String[]
 }
 
 model Session {

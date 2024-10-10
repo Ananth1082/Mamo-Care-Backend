@@ -1,4 +1,4 @@
-import { BloodGroup } from "@prisma/client";
+import { BloodGroup, Patient } from "@prisma/client";
 import { db } from "../db";
 import { removeUndefinedValues } from "../../utils/filterObject";
 
@@ -22,12 +22,6 @@ export async function getPatientById({ id }: { id: string }) {
 
 export async function getAllPatient() {
   return await db.patient.findMany();
-}
-
-interface Patient {
-  ip_number: string;
-  patient_name: string;
-  blood_group: BloodGroup;
 }
 
 export async function createPatient(new_patient: Patient) {
