@@ -24,7 +24,7 @@ export async function sendOTP(body: { phone_number: string }) {
       clientSecret
     );
     console.log("send otp response:", sendOTP);
-    return JSON.stringify(sendOTP);
+    return sendOTP;
   } catch (error: unknown) {
     console.error("Error:", JSON.stringify(error));
     return JSON.stringify(error);
