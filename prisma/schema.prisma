@@ -43,10 +43,11 @@ model Patient {
 }
 
 model Session {
-  id         Int      @id @default(sequence())
-  hashtoken  String
+  id         String   @id @default(uuid())
+  hashtoken  String   @unique
   user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
   user_id    String
+  is_active  Boolean  @default(true)
   created_at DateTime @default(now())
   update_at  DateTime @default(now()) @updatedAt
 

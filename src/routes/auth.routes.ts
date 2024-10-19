@@ -43,7 +43,8 @@ export const authRoutes = () => (app: Elysia) =>
       .get("/get-session", ({ headers }) => {
         return getSession(headers);
       })
-      .get(
+
+      .put(
         "/logout",
         ({ headers }) => {
           return logout(headers);
@@ -52,4 +53,6 @@ export const authRoutes = () => (app: Elysia) =>
           headers: JWTHeader,
         }
       )
+
+      
   );

@@ -28,7 +28,7 @@ interface Patient {
   patient_name: string;
   ip_number: string;
   blood_group: $Enums.BloodGroup;
-  patient_contacts: string[];
+  patient_contacts?: string[];
   height?: number;
   weight?: number;
   dob?: string;

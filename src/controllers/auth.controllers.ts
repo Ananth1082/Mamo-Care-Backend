@@ -97,11 +97,16 @@ export async function verifyOTP(
           },
         });
         const secret = process.env.JWT_SECRET || "secret";
-        const token = sign({ id: new_user.id }, secret);
+        const sessionId = randomUUID();
+        const token = sign(
+          { user_id: new_user.id, session_id: sessionId },
+          secret
+        );
         await db.session.create({
           data: {
             hashtoken: token,
             user_id: new_user.id,
+            id: sessionId,
           },
         });
         return new Response(
@@ -117,26 +122,29 @@ export async function verifyOTP(
       return { otp: response, user: "not created" };
     }
   } catch (error) {
-    return error;
+    return JSON.stringify(error);
   }
 }
 
 export async function getSession(headers: Record<string, string | undefined>) {
-  const authHeader = headers.authorization;
-  if (!authHeader) {
-    throw UnauthorizedError;
-  }
-  const token = authHeader.split(" ")[1];
-  const secret = process.env.JWT_SECRET || "secret";
-  let res = verify(token, secret) as JwtPayload;
-  const session = db.session.findFirst({
-    where: {
-      user: {
-        id: res.id,
+  try {
+    const authHeader = headers.authorization;
+    if (!authHeader) {
+      throw UnauthorizedError;
+    }
+    const token = authHeader.split(" ")[1];
+    const secret = process.env.JWT_SECRET || "secret";
+    let res = verify(token, secret) as JwtPayload;
+    const session = db.session.findFirst({
+      where: {
+        id: res.session_id,
       },
-    },
-  });
-  return session;
+    });
+    return session;
+  } catch (error: unknown) {
+    console.error(error);
+    return JSON.stringify(error);
+  }
 }
 
 export async function logout(headers: Record<string, string | undefined>) {
@@ -148,10 +156,12 @@ export async function logout(headers: Record<string, string | undefined>) {
     const token = authHeader.split(" ")[1];
     const secret = process.env.JWT_SECRET || "secret";
     let res = verify(token, secret) as JwtPayload;
-    const patient = await db.session.deleteMany({
+    const patient = await db.session.update({
       where: {
-        user_id: res["id"] as string,
-        hashtoken: token,
+        id: res["session_id"],
+      },
+      data: {
+        is_active: false,
       },
     });
     console.log(res["id"]);
