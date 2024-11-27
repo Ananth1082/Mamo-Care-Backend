@@ -1,0 +1,18 @@
+meta {
+  name: sign up
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{base_url}}/auth/signup
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "ip_number":"13ca9f25-6448-4845-9105-910ca0e23737",
+    "verification_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwaG9uZV9udW1iZXIiOiI5MTkzNTM3OTg4NzUiLCJ0b2tlbklkIjoiMTMxZDUyYmQtOWM3NC00Y2FiLWJmYjItZjEzYzIxYjVmZWVmIiwiaWF0IjoxNzMyNzMyMTA4fQ.-dLa2QGcPce4M0YoolCbkjmAQStA8dbrIf_ajJoIQBc"
+  }
+}

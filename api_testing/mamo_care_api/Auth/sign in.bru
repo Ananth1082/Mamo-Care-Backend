@@ -1,0 +1,17 @@
+meta {
+  name: sign in
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{base_url}}/auth/signin
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "verification_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwaG9uZV9udW1iZXIiOiI5MTkzNTM3OTg4NzUiLCJ0b2tlbklkIjoiMTMxZDUyYmQtOWM3NC00Y2FiLWJmYjItZjEzYzIxYjVmZWVmIiwiaWF0IjoxNzMyNzMyMTA4fQ.-dLa2QGcPce4M0YoolCbkjmAQStA8dbrIf_ajJoIQBc"
+  }
+}

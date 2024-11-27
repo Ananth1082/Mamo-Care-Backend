@@ -5,7 +5,10 @@ import { UserDetail } from "otpless-node-js-auth-sdk";
 
 const app = express();
 app.use(express.json());
-config()
+//FIXME Change during prod
+config({
+  path:"../.env"
+})
 app.post("/api/auth/send-otp", async (req, res) => {
   const { phone_number } = req.body;
   console.log("Recieved phone: " + phone_number);

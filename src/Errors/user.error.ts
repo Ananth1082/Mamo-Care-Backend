@@ -1,32 +1,32 @@
-class NotFoundError extends Error {
+export class NotFoundError extends Error {
   constructor(message:string) {
     super(message);
     this.name = "NotFoundError";
   }
 }
 
-class UnauthorizedError extends Error {
+export class UnauthorizedError extends Error {
   constructor(message:string) {
     super(message);
     this.name = "UnauthorizedError";
   }
 }
 
-class BadRequestError extends Error {
+export class BadRequestError extends Error {
   constructor(message:string) {
     super(message);
     this.name = "BadRequestError";
   }
 }
 
-class InvalidPrivilegesError extends Error {
+export class InvalidPrivilegesError extends Error {
   constructor(message :string) {
     super(message);
     this.name = "InvalidPrivilegesError"
   } 
 }
 
-class InternalServerError extends Error {
+export class InternalServerError extends Error {
   constructor(message :string) {
     super(message);
     this.name = "InternalServerError"
@@ -34,7 +34,7 @@ class InternalServerError extends Error {
 }
 
 
-class InvalidRequestError extends Error {
+export class InvalidRequestError extends Error {
   constructor(message :string) {
     super(message);
     this.name = "InvalidRequestError"

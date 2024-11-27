@@ -1,23 +1,30 @@
-import { randomUUID, Verify } from "crypto";
+import { randomUUID } from "crypto";
 import { JwtPayload, sign, verify } from "jsonwebtoken";
 //@ts-ignore
 import { UserDetail } from "otpless-node-js-auth-sdk";
 import { db } from "../db";
+import { BadRequestError, InvalidRequestError } from "../Errors/user.error";
 
 export async function sendOTP(body: { phone_number: string }) {
   const { phone_number } = body;
-  const orderId = randomUUID();
+  
   const clientID = process.env.OTPLESS_CLIENT_ID;
   const clientSecret = process.env.OTPLESS_CLIENT_SECRET;
   const hash = process.env.OTPLESS_HASH;
+  const channel = process.env.OTPLESS_CHANNEL;
+  const expiry = process.env.OTP_EXPIRY;
+  const digits = process.env.OTP_DIGITS; 
+  
+  const orderId = randomUUID();
+  
   const sendOTP = await UserDetail.sendOTP(
     phone_number,
     "",
-    "WHATSAPP",
+    channel,
     hash,
     orderId,
-    "60",
-    "5",
+    expiry,
+    digits,
     clientID,
     clientSecret
   );
@@ -50,12 +57,16 @@ export async function verifyPhoneNumber(body: verifyOTPBody) {
   if (response.isOTPVerified) {
     const verifySecret = process.env.VERIFY_SECRET || "mamo-care";
     const tokenId = randomUUID();
+    //generate a verification token with an expiry of 5min
     const verifyToken = sign(
       {
         phone_number,
         tokenId,
       },
-      verifySecret
+      verifySecret,
+      {
+        expiresIn: process.env.VERIFY_TKN_EXPIRY
+      }
     );
 
     return {
@@ -163,7 +174,7 @@ export async function signup(verifyTkn: string, ipNumber: string | undefined) {
   const token = sign(
     {
       phone_number: payload["phone_number"],
-      token_id: sess_data.id,
+      session_id: sess_data.id,
     },
     sessSecret
   );

@@ -68,6 +68,8 @@ export const authRoutes = () => (app: Elysia) =>
     )
     .derive(JWTFilter)
     .put("/logout", ({ set, jwt_payload }) => {
+      console.log(jwt_payload);
+      
       try {
         set.status = 200;
         return logout(jwt_payload.session_id);
