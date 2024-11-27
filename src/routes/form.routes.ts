@@ -7,6 +7,7 @@ import {
   getFormByUserAndTime,
 } from "../controllers/form.controllers";
 import { MedicalForm } from "../types/types";
+import { JWTFilter } from "../middleware/jwt_filter";
 
 export const formRoutes = () => (app: Elysia) =>
   app.group("/form", (app) =>

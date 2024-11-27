@@ -1,9 +1,8 @@
-import { randomUUID } from "crypto";
+import { randomUUID, Verify } from "crypto";
 import { JwtPayload, sign, verify } from "jsonwebtoken";
 //@ts-ignore
 import { UserDetail } from "otpless-node-js-auth-sdk";
 import { db } from "../db";
-import { InvalidPhoneError, UnauthorizedError } from "../Errors/user.error";
 
 export async function sendOTP(body: { phone_number: string }) {
   const { phone_number } = body;
@@ -11,166 +10,181 @@ export async function sendOTP(body: { phone_number: string }) {
   const clientID = process.env.OTPLESS_CLIENT_ID;
   const clientSecret = process.env.OTPLESS_CLIENT_SECRET;
   const hash = process.env.OTPLESS_HASH;
-  try {
-    const sendOTP = await UserDetail.sendOTP(
-      phone_number,
-      "",
-      "WHATSAPP",
-      hash,
-      orderId,
-      "60",
-      "5",
-      clientID,
-      clientSecret
-    );
-    console.log("send otp response:", sendOTP);
-    return orderId;
-  } catch (error: unknown) {
-    console.error("Error:", JSON.stringify(error));
-    return JSON.stringify(error);
-  }
+  const sendOTP = await UserDetail.sendOTP(
+    phone_number,
+    "",
+    "WHATSAPP",
+    hash,
+    orderId,
+    "60",
+    "5",
+    clientID,
+    clientSecret
+  );
+  console.log("send otp response:", sendOTP);
+  return {
+    msg: "otp sent successfully",
+    order_id: orderId,
+  };
 }
 
 interface verifyOTPBody {
-  user: { phone_number: string; ip_number?: string };
+  phone_number: string;
   otp: string;
   order_id: string;
 }
 
-export async function verifyOTP(
-  body: verifyOTPBody,
-  query: { isDoctor?: boolean }
-) {
-  const { user, order_id, otp } = body;
+export async function verifyPhoneNumber(body: verifyOTPBody) {
+  const { phone_number, otp, order_id } = body;
   const clientID = process.env.OTPLESS_CLIENT_ID;
   const clientSecret = process.env.OTPLESS_CLIENT_SECRET;
-  const { isDoctor } = query;
-  try {
-    const response = await UserDetail.verifyOTP(
-      "",
-      user.phone_number,
-      order_id,
-      otp,
-      clientID,
-      clientSecret
+  const response = await UserDetail.verifyOTP(
+    "",
+    phone_number,
+    order_id,
+    otp,
+    clientID,
+    clientSecret
+  );
+
+  if (response.isOTPVerified) {
+    const verifySecret = process.env.VERIFY_SECRET || "mamo-care";
+    const tokenId = randomUUID();
+    const verifyToken = sign(
+      {
+        phone_number,
+        tokenId,
+      },
+      verifySecret
     );
 
-    if (response.isOTPVerified) {
-      const new_user = await db.user.create({
-        data: {
-          role: isDoctor ? "Doctor" : "Patient",
-          phone_number: user.phone_number,
-        },
-      });
-
-      if (isDoctor) {
-        const doctor = await db.doctor.update({
-          data: {
-            doctor_id: new_user.id,
-          },
-          where: {
-            phone_number: user.phone_number,
-          },
-        });
-        if (!doctor) {
-          throw InvalidPhoneError;
-        }
-        return new Response(JSON.stringify(doctor), {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-      }
-
-      const patient = await db.patient.findFirst({
-        where: {
-          ip_number: user.ip_number,
-        },
-      });
-      if (patient) {
-        await db.patient.update({
-          data: {
-            user_id: new_user.id,
-          },
-          where: {
-            ip_number: user.ip_number,
-          },
-        });
-        const secret = process.env.JWT_SECRET || "secret";
-        const sessionId = randomUUID();
-        const token = sign(
-          { user_id: new_user.id, session_id: sessionId },
-          secret
-        );
-        await db.session.create({
-          data: {
-            hashtoken: token,
-            user_id: new_user.id,
-            id: sessionId,
-          },
-        });
-        return new Response(
-          JSON.stringify({ otp: response, user: new_user, token: token }),
-          {
-            headers: { "Content-Type": "application/json" },
-          }
-        );
-      } else {
-        throw new Error("Patient not registered ask your doctor");
-      }
-    } else {
-      return { otp: response, user: "not created" };
-    }
-  } catch (error) {
-    return JSON.stringify(error);
+    return {
+      msg: "verification successful",
+      verification_token: verifyToken,
+    };
+  } else {
+    throw new BadRequestError("Invalid otp");
   }
 }
 
-export async function getSession(headers: Record<string, string | undefined>) {
-  try {
-    const authHeader = headers.authorization;
-    if (!authHeader) {
-      throw UnauthorizedError;
-    }
-    const token = authHeader.split(" ")[1];
-    const secret = process.env.JWT_SECRET || "secret";
-    let res = verify(token, secret) as JwtPayload;
-    const session = db.session.findFirst({
-      where: {
-        id: res.session_id,
-      },
-    });
-    return session;
-  } catch (error: unknown) {
-    console.error(error);
-    return JSON.stringify(error);
+export async function signIn(verifyTkn: string) {
+  //verify the token
+  const verifySecret = process.env.VERIFY_SECRET;
+  if (!verifySecret) {
+    throw new BadRequestError("no verification token provided");
   }
+  const payload = verify(verifyTkn, verifySecret) as JwtPayload;
+
+  //find the user with the phone number else throw error
+  const data = await db.user.findUniqueOrThrow({
+    where: {
+      phone_number: payload["phone_number"],
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  //create a log of the session
+  const sess_data = await db.session.create({
+    data: {
+      user_id: data.id,
+    },
+    select: {
+      id: true,
+    },
+  });
+  const sessSecret = process.env.JWT_SECRET || "mamo-care";
+
+  const token = sign(
+    {
+      phone_number: payload["phone_number"],
+      session_id: sess_data.id,
+    },
+    sessSecret
+  );
+  return {
+    msg: "signed in successfully",
+    token,
+  };
 }
 
-export async function logout(headers: Record<string, string | undefined>) {
-  try {
-    const authHeader = headers.authorization;
-    if (!authHeader) {
-      throw new Error("Unauthorized! enter a token");
-    }
-    const token = authHeader.split(" ")[1];
-    const secret = process.env.JWT_SECRET || "secret";
-    let res = verify(token, secret) as JwtPayload;
-    const patient = await db.session.update({
+export async function signup(verifyTkn: string, ipNumber: string | undefined) {
+  //verify the token
+  const verifySecret = process.env.VERIFY_SECRET;
+  if (!verifySecret) {
+    throw new BadRequestError("no verification token provided");
+  }
+  const payload = verify(verifyTkn, verifySecret) as JwtPayload;
+
+  //find the user with the phone number else throw error
+  const data = await db.user.findUnique({
+    where: {
+      phone_number: payload["phone_number"],
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  if (data) {
+    throw new InvalidRequestError("user already exists");
+  }
+
+  const user = await db.user.create({
+    data: {
+      role: "Patient",
+      phone_number: payload["phone_number"],
+    },
+  });
+
+  if (ipNumber) {
+    const patient = await db.patient.update({
       where: {
-        id: res["session_id"],
+        ip_number: ipNumber,
       },
       data: {
-        is_active: false,
+        user_id: user.id,
       },
     });
-    console.log(res["id"]);
-
-    return {
-      msg: "Successfully logged out of device",
-      session: patient,
-    };
-  } catch (error: unknown) {
-    throw new Error("Error logging out " + JSON.stringify(error));
   }
+
+  //create a log of the session
+  const sess_data = await db.session.create({
+    data: {
+      user_id: user.id,
+    },
+    select: {
+      id: true,
+    },
+  });
+  const sessSecret = process.env.JWT_SECRET || "mamo-care";
+
+  const token = sign(
+    {
+      phone_number: payload["phone_number"],
+      token_id: sess_data.id,
+    },
+    sessSecret
+  );
+  return {
+    msg: "signed up successfully",
+    token,
+  };
+}
+
+export async function logout(sessId: string) {
+  await db.session.update({
+    where: {
+      id: sessId,
+    },
+    data: {
+      is_active: false,
+    },
+  });
+  console.log(sessId);
+
+  return {
+    msg: "Successfully logged out of device",
+  };
 }

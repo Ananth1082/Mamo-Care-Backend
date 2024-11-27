@@ -1,10 +1,7 @@
 import { t } from "elysia";
 
 export const VerifyOTPReqBody = t.Object({
-  user: t.Object({
-    phone_number: t.String(),
-    ip_number: t.Optional(t.String()),
-  }),
+  phone_number: t.String(),
   otp: t.String(),
   order_id: t.String(),
 });

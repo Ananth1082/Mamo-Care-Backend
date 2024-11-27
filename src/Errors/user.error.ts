@@ -1,5 +1,42 @@
-export const InvalidUserIDError = new Error("User id provided is invalid");
+class NotFoundError extends Error {
+  constructor(message:string) {
+    super(message);
+    this.name = "NotFoundError";
+  }
+}
 
-export const UnauthorizedError = new Error("Unauthorized! enter a token");
+class UnauthorizedError extends Error {
+  constructor(message:string) {
+    super(message);
+    this.name = "UnauthorizedError";
+  }
+}
 
-export const InvalidPhoneError = new Error("Phone number doesnt belong to a doctor");
+class BadRequestError extends Error {
+  constructor(message:string) {
+    super(message);
+    this.name = "BadRequestError";
+  }
+}
+
+class InvalidPrivilegesError extends Error {
+  constructor(message :string) {
+    super(message);
+    this.name = "InvalidPrivilegesError"
+  } 
+}
+
+class InternalServerError extends Error {
+  constructor(message :string) {
+    super(message);
+    this.name = "InternalServerError"
+  } 
+}
+
+
+class InvalidRequestError extends Error {
+  constructor(message :string) {
+    super(message);
+    this.name = "InvalidRequestError"
+  } 
+}
