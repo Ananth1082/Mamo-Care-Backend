@@ -1,14 +1,11 @@
 import Elysia, { t } from "elysia";
 import {
-  sendOTP,
-  logout,
   verifyPhoneNumber,
   signIn,
   signup,
 } from "../controllers/auth.controllers";
 
 import { VerifyOTPReqBody, JWTHeader } from "../types/auth";
-import { JWTFilter, payload } from "../middleware/jwt_filter";
 
 export const authRoutes = () => (app: Elysia) =>
   app
@@ -47,7 +44,6 @@ export const authRoutes = () => (app: Elysia) =>
           },
           {
             body: t.Object({
-              // ip_number: t.String(),
               verification_token: t.String(),
             }),
           }
@@ -66,17 +62,4 @@ export const authRoutes = () => (app: Elysia) =>
           }
         )
     )
-    .derive(JWTFilter)
-    .put("/logout", ({ set, jwt_payload }) => {
-      console.log(jwt_payload);
-      
-      try {
-        set.status = 200;
-        return logout(jwt_payload.session_id);
-      } catch (error) {
-        return {
-          msg: "Logout error",
-          error,
-        };
-      }
-    });
+    ;

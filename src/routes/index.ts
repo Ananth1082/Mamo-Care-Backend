@@ -3,6 +3,7 @@ import {  authRoutes } from "./auth.routes";
 import { formRoutes } from "./form.routes";
 import { medicationRoutes } from "./medication.routes";
 import { patientRoutes } from "./patient.routes";
+import { userRoutes } from "./user.routes";
 
 
 export const routes = new Elysia().group("/api", (app) =>
@@ -11,4 +12,5 @@ export const routes = new Elysia().group("/api", (app) =>
   .use(formRoutes())
   .use(medicationRoutes())
   .use(authRoutes())
+  .use(userRoutes())
 );
