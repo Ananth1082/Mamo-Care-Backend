@@ -110,6 +110,7 @@ export async function signIn(verifyTkn: string) {
   const token = sign(
     {
       phone_number: payload["phone_number"],
+      user_id : data.id,
       session_id: sess_data.id,
     },
     sessSecret
@@ -174,6 +175,7 @@ export async function signup(verifyTkn: string, ipNumber: string | undefined) {
   const token = sign(
     {
       phone_number: payload["phone_number"],
+      user_id : user.id,
       session_id: sess_data.id,
     },
     sessSecret
@@ -193,7 +195,6 @@ export async function logout(sessId: string) {
       is_active: false,
     },
   });
-  console.log(sessId);
 
   return {
     msg: "Successfully logged out of device",

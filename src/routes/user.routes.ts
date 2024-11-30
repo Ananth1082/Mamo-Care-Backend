@@ -6,7 +6,6 @@ import { logout } from "../controllers/auth.controllers";
 export const userRoutes = () => (app: Elysia) =>
   app.group("/user", (app) =>
     app
-    .derive(JWTFilter)
     .get("/profile/:id", async ({ params }) => {
       const { id } = params;
       try {
@@ -18,9 +17,11 @@ export const userRoutes = () => (app: Elysia) =>
         };
       }
     })
-    .put("/logout", ({ set, jwt_payload }) => {
-      console.log(jwt_payload);
+    .derive(JWTFilter)
+    .put("/profile",({set,jwt_payload})=>{
       
+    })
+    .put("/logout", ({ set, jwt_payload }) => {
       try {
         set.status = 200;
         return logout(jwt_payload.session_id);

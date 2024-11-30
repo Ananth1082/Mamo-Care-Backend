@@ -3,6 +3,7 @@ import { verify } from "jsonwebtoken";
 export interface payload {
   phone_number : string;
   session_id : string;
+  user_id : string;
 }
 
 export function filter(token : string) {
