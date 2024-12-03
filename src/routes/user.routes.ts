@@ -30,7 +30,6 @@ export const userRoutes = () => (app: Elysia) =>
           };
         }
       })
-      // .put("/profile", ({ set, jwt_payload }) => {})
       .put("/logout", ({ set, jwt_payload }) => {
         try {
           set.status = 200;

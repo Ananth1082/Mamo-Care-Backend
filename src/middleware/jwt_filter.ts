@@ -1,18 +1,19 @@
 import { verify } from "jsonwebtoken";
 
 export interface payload {
-  phone_number : string;
-  session_id : string;
-  user_id : string;
+  readonly phone_number: string;
+  readonly session_id: string;
+  readonly user_id: string;
+  readonly role: "Doctor" | "Patient";
 }
 
-export function filter(token : string) {
-  const secretToken = process.env.JWT_SECRET|| 'mamo-care';
-  const payload = verify(token,secretToken) as payload;
+function filter(token: string) {
+  const secretToken = process.env.JWT_SECRET || "mamo-care";
+  const payload = verify(token, secretToken) as payload;
   return payload;
 }
 
-export const JWTFilter = ({ headers } : Record<string,any>) => {
+export const JWTFilter = ({ headers }: Record<string, any>) => {
   const authHeader = headers["authorization"];
   if (!authHeader) {
     throw new Error("Auth header missing");
@@ -22,4 +23,4 @@ export const JWTFilter = ({ headers } : Record<string,any>) => {
   return {
     jwt_payload: payload,
   };
-}
+};

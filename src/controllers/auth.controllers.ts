@@ -7,16 +7,16 @@ import { BadRequestError, InvalidRequestError } from "../Errors/user.error";
 
 export async function sendOTP(body: { phone_number: string }) {
   const { phone_number } = body;
-  
+
   const clientID = process.env.OTPLESS_CLIENT_ID;
   const clientSecret = process.env.OTPLESS_CLIENT_SECRET;
   const hash = process.env.OTPLESS_HASH;
   const channel = process.env.OTPLESS_CHANNEL;
   const expiry = process.env.OTP_EXPIRY;
-  const digits = process.env.OTP_DIGITS; 
-  
+  const digits = process.env.OTP_DIGITS;
+
   const orderId = randomUUID();
-  
+
   const sendOTP = await UserDetail.sendOTP(
     phone_number,
     "",
@@ -65,7 +65,7 @@ export async function verifyPhoneNumber(body: verifyOTPBody) {
       },
       verifySecret,
       {
-        expiresIn: process.env.VERIFY_TKN_EXPIRY
+        expiresIn: process.env.VERIFY_TKN_EXPIRY,
       }
     );
 
@@ -93,6 +93,7 @@ export async function signIn(verifyTkn: string) {
     },
     select: {
       id: true,
+      role: true,
     },
   });
 
@@ -110,8 +111,9 @@ export async function signIn(verifyTkn: string) {
   const token = sign(
     {
       phone_number: payload["phone_number"],
-      user_id : data.id,
+      user_id: data.id,
       session_id: sess_data.id,
+      role: data.role,
     },
     sessSecret
   );
@@ -175,7 +177,7 @@ export async function signup(verifyTkn: string, ipNumber: string | undefined) {
   const token = sign(
     {
       phone_number: payload["phone_number"],
-      user_id : user.id,
+      user_id: user.id,
       session_id: sess_data.id,
     },
     sessSecret
