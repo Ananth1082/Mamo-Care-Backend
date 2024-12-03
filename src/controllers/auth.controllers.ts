@@ -138,6 +138,7 @@ export async function signup(verifyTkn: string, ipNumber: string | undefined) {
     },
     select: {
       id: true,
+      role: true,
     },
   });
 
@@ -153,7 +154,7 @@ export async function signup(verifyTkn: string, ipNumber: string | undefined) {
   });
 
   if (ipNumber) {
-    const patient = await db.patient.update({
+    await db.patient.update({
       where: {
         ip_number: ipNumber,
       },
@@ -179,6 +180,7 @@ export async function signup(verifyTkn: string, ipNumber: string | undefined) {
       phone_number: payload["phone_number"],
       user_id: user.id,
       session_id: sess_data.id,
+      role: user.role,
     },
     sessSecret
   );
