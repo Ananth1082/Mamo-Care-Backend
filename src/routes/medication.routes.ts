@@ -21,12 +21,33 @@ export const medicationRoutes = () => (app: Elysia) =>
       .get("/", getAllMedications, {
         beforeHandle: checkDoctor,
       })
-      .get("/:id/:user-id", ({ params }) => getMedicationByID(params), {
+      .get("/:id", ({ params }) => getMedicationByID(params), {
         params: t.Object({
           id: t.Numeric(),
           user_id: t.String(),
         }),
-        beforeHandle: checkUserOrDoctor,
+        beforeHandle({ set, params, jwt_payload }) {
+          if (jwt_payload.role !== "Doctor") {
+            const { id } = params;
+            try {
+              const med = db.medication.findUniqueOrThrow({
+                where: {
+                  id,
+                  patient: {
+                    user_id: jwt_payload.user_id,
+                  },
+                },
+                select: { id: true },
+              });
+            } catch (err: unknown) {
+              set.status = 401;
+              return {
+                msg: "unauthorized",
+                error: "only doctor or patient can access this route",
+              };
+            }
+          }
+        },
       })
       .get(
         "/patient/:patient_id",
