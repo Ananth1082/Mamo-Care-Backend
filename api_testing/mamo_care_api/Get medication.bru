@@ -1,0 +1,21 @@
+meta {
+  name: Get medication
+  type: http
+  seq: 2
+}
+
+get {
+  url: http://localhost:3000/api/medication/patient/8bdc3c21-904d-4338-867f-e3e0bead11c1
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwaG9uZV9udW1iZXIiOiI5MTkzNTM3OTg4NzUiLCJ1c2VyX2lkIjoiZWQ4NTU0NTEtMWZkOC00NWM0LWI5NTAtZGE4ZTI4Mzc2NTFjIiwic2Vzc2lvbl9pZCI6ImRhNTA0MmRhLWM5NTgtNDNkYy1iYWIxLTM4YTE5NmEzYTI1MiIsInJvbGUiOiJEb2N0b3IiLCJpYXQiOjE3MzQ3NTM4Nzd9.PxlMOQZPa_q7NQCfzgRu5gTKUGrh5VwEBy5P6fbPg8g
+}
+
+body:json {
+  {
+    "id": 0
+  }
+}

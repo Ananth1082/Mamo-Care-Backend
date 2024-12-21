@@ -17,4 +17,3 @@ new Elysia()
   .listen(3000);
 
 console.log(`Elysia is running at localhost:3000`);
-

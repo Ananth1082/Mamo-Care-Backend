@@ -13,7 +13,7 @@ export const checkDoctor: any = ({ set, jwt_payload }: any) => {
 };
 
 export const checkUserOrDoctor: any = ({ set, jwt_payload, params }: any) => {
-  if (jwt_payload.role !== "Doctor" || jwt_payload.user_id !== params.user_id) {
+  if (jwt_payload.role !== "Doctor" && jwt_payload.user_id !== params.user_id) {
     if (set.status) set.status = 401;
     return {
       msg: "unauthorized",
