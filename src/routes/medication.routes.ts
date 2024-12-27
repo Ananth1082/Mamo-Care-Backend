@@ -50,11 +50,11 @@ export const medicationRoutes = () => (app: Elysia) =>
         },
       })
       .get(
-        "/patient/:patient_id",
+        "/patient/:user_id",
         ({ params }) => getMedicationByPatient(params),
         {
           params: t.Object({
-            patient_id: t.String(),
+            user_id: t.String(),
           }),
           beforeHandle: checkUserOrDoctor,
         }

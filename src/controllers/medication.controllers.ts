@@ -13,14 +13,10 @@ export async function getMedicationByID({ id }: { id: number }) {
   });
 }
 
-export async function getMedicationByPatient({
-  patient_id,
-}: {
-  patient_id: string;
-}) {
+export async function getMedicationByPatient({ user_id }: { user_id: string }) {
   return await db.medication.findMany({
     where: {
-      patient_id,
+      patient_id: user_id,
     },
   });
 }
