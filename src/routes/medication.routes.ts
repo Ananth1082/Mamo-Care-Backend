@@ -21,6 +21,19 @@ export const medicationRoutes = () => (app: Elysia) =>
       .get("/", getAllMedications, {
         beforeHandle: checkDoctor,
       })
+      .get(
+        "/patient/:user_id",
+        ({ params, jwt_payload }) =>
+          getMedicationByPatient(
+            params.user_id === "me" ? jwt_payload.user_id : params.user_id
+          ),
+        {
+          params: t.Object({
+            user_id: t.String(),
+          }),
+          beforeHandle: checkUserOrDoctor,
+        }
+      )
       .get("/:id", ({ params }) => getMedicationByID(params), {
         params: t.Object({
           id: t.Numeric(),
@@ -49,16 +62,6 @@ export const medicationRoutes = () => (app: Elysia) =>
           }
         },
       })
-      .get(
-        "/patient/:user_id",
-        ({ params }) => getMedicationByPatient(params),
-        {
-          params: t.Object({
-            user_id: t.String(),
-          }),
-          beforeHandle: checkUserOrDoctor,
-        }
-      )
       //adding a tablet to the prescription
       .post("/", ({ body }) => createMedication(body), {
         body: Medication,

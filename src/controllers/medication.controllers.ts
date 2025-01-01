@@ -13,7 +13,7 @@ export async function getMedicationByID({ id }: { id: number }) {
   });
 }
 
-export async function getMedicationByPatient({ user_id }: { user_id: string }) {
+export async function getMedicationByPatient(user_id: string) {
   const patient = await db.patient.findUnique({
     where: {
       user_id,

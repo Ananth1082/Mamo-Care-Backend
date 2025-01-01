@@ -9,7 +9,7 @@ import {
   updatePatient,
 } from "../controllers/patient.controllers";
 import { JWTFilter } from "../middleware/jwt_filter";
-import { checkDoctor, checkUserOrDoctor } from "../middleware/check_user";
+import { checkDoctor } from "../middleware/check_user";
 
 export const patientRoutes = () => (app: Elysia) =>
   app.group("/patient", (app) =>
@@ -44,11 +44,11 @@ export const patientRoutes = () => (app: Elysia) =>
               minProperties: 1,
             }
           ),
-          beforeHandle: checkUserOrDoctor,
+          beforeHandle: checkDoctor,
         }
       )
 
       .delete("/:ip_number", ({ params }) => deletePatient(params), {
-        beforeHandle: checkUserOrDoctor,
+        beforeHandle: checkDoctor,
       })
   );

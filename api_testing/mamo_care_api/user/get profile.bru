@@ -1,21 +1,15 @@
 meta {
-  name: Get medication
+  name: get profile
   type: http
-  seq: 2
+  seq: 1
 }
 
 get {
-  url: {{base_url}}/api/medication/patient/me
-  body: json
+  url: {{base_url}}/api/user/profile/ed855451-1fd8-45c4-b950-da8e2837651c
+  body: none
   auth: bearer
 }
 
 auth:bearer {
   token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwaG9uZV9udW1iZXIiOiI5MTkzNTM3OTg4NzUiLCJ1c2VyX2lkIjoiZWQ4NTU0NTEtMWZkOC00NWM0LWI5NTAtZGE4ZTI4Mzc2NTFjIiwic2Vzc2lvbl9pZCI6ImRhNTA0MmRhLWM5NTgtNDNkYy1iYWIxLTM4YTE5NmEzYTI1MiIsInJvbGUiOiJQYXRpZW50IiwiaWF0IjoxNzM0NzUzODc3fQ.U9AiOcdG5IhNaroQVkvCzq-v311Kk4pt8IQMZQGvFzo
-}
-
-body:json {
-  {
-    "id": 0
-  }
 }
