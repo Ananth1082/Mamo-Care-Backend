@@ -1,4 +1,4 @@
-import { verify } from "jsonwebtoken";
+import Jwt from "jsonwebtoken";
 
 export interface payload {
   readonly phone_number: string;
@@ -9,7 +9,7 @@ export interface payload {
 
 function filter(token: string) {
   const secretToken = process.env.JWT_SECRET || "mamo-care";
-  const payload = verify(token, secretToken) as payload;
+  const payload = Jwt.verify(token, secretToken) as payload;
   return payload;
 }
 

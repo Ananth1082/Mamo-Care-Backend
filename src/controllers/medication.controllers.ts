@@ -14,11 +14,25 @@ export async function getMedicationByID({ id }: { id: number }) {
 }
 
 export async function getMedicationByPatient({ user_id }: { user_id: string }) {
-  return await db.medication.findMany({
+  const patient = await db.patient.findUnique({
     where: {
-      patient_id: user_id,
+      user_id,
+    },
+    select: {
+      ip_number: true,
     },
   });
+  if (patient) {
+    return await db.medication.findMany({
+      where: {
+        patient_id: patient.ip_number,
+      },
+    });
+  } else {
+    return {
+      msg: "No patient found",
+    };
+  }
 }
 interface Medication {
   patient_id: string;

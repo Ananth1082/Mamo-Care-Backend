@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto";
-import { JwtPayload, sign, verify } from "jsonwebtoken";
+import Jwt from "jsonwebtoken";
 //@ts-ignore
 import { UserDetail } from "otpless-node-js-auth-sdk";
 import { db } from "../db";
@@ -58,7 +58,8 @@ export async function verifyPhoneNumber(body: verifyOTPBody) {
     const verifySecret = process.env.VERIFY_SECRET || "mamo-care";
     const tokenId = randomUUID();
     //generate a verification token with an expiry of 5min
-    const verifyToken = sign(
+
+    const verifyToken = Jwt.sign(
       {
         phone_number,
         tokenId,
@@ -84,7 +85,7 @@ export async function signIn(verifyTkn: string) {
   if (!verifySecret) {
     throw new BadRequestError("no verification token provided");
   }
-  const payload = verify(verifyTkn, verifySecret) as JwtPayload;
+  const payload = Jwt.verify(verifyTkn, verifySecret) as Jwt.JwtPayload;
 
   //find the user with the phone number else throw error
   const data = await db.user.findUniqueOrThrow({
@@ -108,7 +109,7 @@ export async function signIn(verifyTkn: string) {
   });
   const sessSecret = process.env.JWT_SECRET || "mamo-care";
 
-  const token = sign(
+  const token = Jwt.sign(
     {
       phone_number: payload["phone_number"],
       user_id: data.id,
@@ -129,7 +130,7 @@ export async function signup(verifyTkn: string, ipNumber: string | undefined) {
   if (!verifySecret) {
     throw new BadRequestError("no verification token provided");
   }
-  const payload = verify(verifyTkn, verifySecret) as JwtPayload;
+  const payload = Jwt.verify(verifyTkn, verifySecret) as Jwt.JwtPayload;
 
   //find the user with the phone number else throw error
   const data = await db.user.findUnique({
@@ -175,7 +176,7 @@ export async function signup(verifyTkn: string, ipNumber: string | undefined) {
   });
   const sessSecret = process.env.JWT_SECRET || "mamo-care";
 
-  const token = sign(
+  const token = Jwt.sign(
     {
       phone_number: payload["phone_number"],
       user_id: user.id,
